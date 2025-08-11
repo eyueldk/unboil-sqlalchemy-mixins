@@ -1,0 +1,32 @@
+[project]
+name = "unboil-sqlalchemy-mixins"
+version = "0.1.0"
+description = "A library providing reusable mixins for SQLAlchemy models."
+readme = "README.md"
+authors = [
+    { name = "eyueldk" }
+]
+requires-python = ">=3.9"
+license = { text = "MIT" }
+keywords = ["unboil", "sqlalchemy", "mixins", "orm", "python", "database", "reusable"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "sqlalchemy>=2.0.0",
+]
+
+[project.urls]
+homepage = "https://github.com/eyueldk/unboil-sqlalchemy-mixins"
+repository = "https://github.com/eyueldk/unboil-sqlalchemy-mixins"
+
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/unboil_sqlalchemy_mixins"]
