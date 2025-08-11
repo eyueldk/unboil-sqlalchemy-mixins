@@ -1,72 +1,65 @@
+# unboil-sqlalchemy-mixins
 
-# unboil-signals
+Reusable mixins for SQLAlchemy models, designed to save you time and reduce boilerplate in your Python ORM code.
 
+## Features
 
-Lightweight, strongly-typed event and signal library for Python.
+- **IdentifiableMixin**: Adds a string primary key with optional prefix to your models.
+- **TimestampedMixin**: Adds `created_at` and `updated_at` fields with automatic timestamping.
 
 ## Installation
 
-
 ```bash
-pip install unboil-signals
+pip install unboil-sqlalchemy-mixins
 ```
 
-## Quick Start
+## Usage
 
+### IdentifiableMixin
+
+Add a string `id` primary key to your models. You can also use a prefix for the ID:
 
 ```python
-from unboil_signals import SyncSignal, AsyncSignal, SyncEvent, AsyncEvent
-import asyncio
+from sqlalchemy.orm import DeclarativeBase
+from unboil_sqlalchemy_mixins import IdentifiableMixin
 
-# 1. SyncSignal: listeners can return values
-sig = SyncSignal[[int], str]()  # takes an int, returns str
+class Base(DeclarativeBase):
+    pass
 
-@sig
-def listener(x: int) -> str:
-    return f"got {x}"
+class User(IdentifiableMixin, Base):
+    __tablename__ = "users"
+    # ... your fields ...
 
-results = sig.invoke(42)  # returns ["got 42"]
-
-# 2. AsyncSignal: async listeners with await
-async_sig = AsyncSignal[[int], str]()  # takes int, returns str
-
-@async_sig
-async def async_listener(x: int) -> str:
-    await asyncio.sleep(0.1)
-    return f"async got {x}"
-
-responses = await async_sig.ainvoke(7)  # sequential
-all_responses = await async_sig.ginvoke(7)  # parallel with asyncio.gather
-
-# 3. SyncEvent / AsyncEvent: no return values
-evt = SyncEvent[str]()
-
-@evt
-def on_msg(msg: str) -> None:
-    print(msg)
-
-evt.invoke("Hello")
-
-async_evt = AsyncEvent[str]()
-
-@async_evt
-async def on_async(msg: str) -> None:
-    await asyncio.sleep(0.1)
-    print(msg)
-
-await async_evt.ainvoke("Hi")
+# Or with a prefix:
+class PrefixedUser(IdentifiableMixin.with_prefix("user_"), Base):
+    __tablename__ = "prefixed_users"
+    # ... your fields ...
 ```
 
-## API
+### TimestampedMixin
 
-- **SyncSignal[P, T]** - register callables `Callable[P, T]`, invoke synchronously
-- **AsyncSignal[P, T]** - register `Callable[P, Awaitable[T]]`, invoke with `ainvoke` or `ginvoke`
-- **SyncEvent[P]** - subclass of `SyncSignal[P, None]` (ignore return)
-- **AsyncEvent[P]** - subclass of `AsyncSignal[P, Awaitable[None]]`
+Add `created_at` and `updated_at` fields that are automatically managed:
 
-## Contributing
+```python
+from sqlalchemy.orm import DeclarativeBase
+from unboil_sqlalchemy_mixins import TimestampedMixin
 
-Pull requests welcome. Please run tests and follow code style.
+class Base(DeclarativeBase):
+    pass
+
+class Post(TimestampedMixin, Base):
+    __tablename__ = "posts"
+    # ... your fields ...
+```
+
+## Mixins API
+
+### IdentifiableMixin
+- Adds a string `id` primary key (32 hex chars by default).
+- Use `IdentifiableMixin.with_prefix(prefix)` to add a custom prefix to the ID.
+
+### TimestampedMixin
+- Adds `created_at` and `updated_at` fields (timezone-aware, auto-managed).
 
 ## License
 
