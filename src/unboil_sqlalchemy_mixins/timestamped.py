@@ -1,9 +1,9 @@
 
 from datetime import datetime
-from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
+from sqlalchemy.orm import Mapped, mapped_column, MappedAsDataclass
 from sqlalchemy import DateTime, func
 
-class TimestampedMixin:
+class TimestampedMixin(MappedAsDataclass):
     """
     SQLAlchemy 2.0 style mixin for timestamp fields.
     Inherit this class in your models to enable automatic timestamping.

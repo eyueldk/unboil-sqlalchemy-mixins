@@ -1,6 +1,6 @@
 [project]
 name = "unboil-sqlalchemy-mixins"
-version = "0.1.1"
+version = "0.1.2"
 description = "A library providing reusable mixins for SQLAlchemy models."
 readme = "README.md"
 authors = [
