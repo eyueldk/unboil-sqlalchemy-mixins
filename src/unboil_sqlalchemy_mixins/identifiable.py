@@ -12,7 +12,7 @@ class IdentifiableMixin(MappedAsDataclass):
     """
 
     id: Mapped[str] = mapped_column(
-        String(32), primary_key=True, default=uuid.uuid4().hex, nullable=False, init=False
+        String(32), primary_key=True, default_factory=lambda: uuid.uuid4().hex, nullable=False, init=False
     )
 
     @classmethod
@@ -21,7 +21,7 @@ class IdentifiableMixin(MappedAsDataclass):
             id: Mapped[str] = mapped_column(
                 String(32),
                 primary_key=True,
-                default=lambda: f"{prefix}{uuid.uuid4().hex}",
+                default_factory=lambda: f"{prefix}{uuid.uuid4().hex}",
                 nullable=False,
                 init=False,
             )
