@@ -23,6 +23,7 @@ class IdentifiableMixin:
                 primary_key=True,
                 default=lambda: f"{prefix}{uuid.uuid4().hex}",
                 nullable=False,
+                init=False,
             )
 
         return _Identifiable
