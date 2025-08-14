@@ -11,12 +11,16 @@ pip install unboil-sqlalchemy-mixins
 
 ## Mixins
 
+
+
 ### IdentifiableMixin
 Adds a string `id` primary key. Optionally, use a prefix:
 ```python
 from unboil_sqlalchemy_mixins import IdentifiableMixin
+
 class User(IdentifiableMixin, Base): ...
-class PrefixedUser(IdentifiableMixin, Base, id_prefix="user_"): ...
+# With prefix:
+class PrefixedUser(IdentifiableMixin.with_config("user_"), Base): ...
 ```
 
 ### TimestampedMixin
@@ -26,19 +30,28 @@ from unboil_sqlalchemy_mixins import TimestampedMixin
 class Post(TimestampedMixin, Base): ...
 ```
 
-### TenantScopedMixin
-Adds a required, indexed `tenant_id` column for multi-tenant apps:
+
+
+### TenantOwnedMixin
+Adds a required, indexed `tenant_id` column. Optionally, specify a foreign key:
 ```python
-from unboil_sqlalchemy_mixins import TenantScopedMixin
-class Invoice(TenantScopedMixin, Base): ...
+from unboil_sqlalchemy_mixins import TenantOwnedMixin
+
+class Invoice(TenantOwnedMixin, Base): ...
+# With foreign key:
+class InvoiceWithFK(TenantOwnedMixin.with_config("tenants.id"), Base): ...
 ```
+
+
 
 ### UserOwnedMixin
 Adds a required, indexed `user_id` column. Optionally, specify a foreign key:
 ```python
 from unboil_sqlalchemy_mixins import UserOwnedMixin
+
 class Note(UserOwnedMixin, Base): ...
-class NoteWithFK(UserOwnedMixin, Base, user_fk="users.id"): ...
+# With foreign key:
+class NoteWithFK(UserOwnedMixin.with_config("users.id"), Base): ...
 ```
 
 ---

@@ -7,7 +7,7 @@ class IdentifiableMixin(MappedAsDataclass):
     """
     Mixin for SQLAlchemy models to add a string 'id' primary key with optional user-specified prefix.
     Usage:
-        class MyModel(IdentifiableMixin, Base, id_prefix="user_"):
+        class MyModel(IdentifiableMixin.with_config("user_"), Base):
             ...
     """
 
@@ -19,12 +19,17 @@ class IdentifiableMixin(MappedAsDataclass):
         init=False,
     )
     
-    def __init_subclass__(cls, id_prefix: str = "", **kwargs) -> None:
-        super().__init_subclass__(**kwargs)
-        cls.id = mapped_column(
-            String(32),
-            primary_key=True,
-            default_factory=lambda: f"{id_prefix}{uuid.uuid4().hex}",
-            nullable=False,
-            init=False,
-        )
+    @classmethod
+    def with_config(cls, prefix: str) -> "type[IdentifiableMixin]":
+        class _IdentifiableMixin(IdentifiableMixin):
+            id: Mapped[str] = mapped_column(
+                String(32),
+                primary_key=True,
+                default_factory=lambda: f"{prefix}{uuid.uuid4().hex}",
+                nullable=False,
+                init=False,
+            )
+        return _IdentifiableMixin
+    
+    
+IdentifiableMixin()

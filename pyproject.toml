@@ -30,3 +30,13 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/unboil_sqlalchemy_mixins"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=src/unboil_sqlalchemy_mixins --cov-report=term-missing"
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+]
