@@ -30,6 +30,3 @@ class IdentifiableMixin(MappedAsDataclass):
                 init=False,
             )
         return _IdentifiableMixin
-    
-    
-IdentifiableMixin()
