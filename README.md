@@ -31,7 +31,7 @@ class User(IdentifiableMixin, Base):
     # ... your fields ...
 
 # Or with a prefix:
-class PrefixedUser(IdentifiableMixin.with_prefix("user_"), Base):
+class PrefixedUser(IdentifiableMixin, Base, id_prefix="user_"):
     __tablename__ = "prefixed_users"
     # ... your fields ...
 ```
@@ -50,6 +50,23 @@ class Base(DeclarativeBase):
 class Post(TimestampedMixin, Base):
     __tablename__ = "posts"
     # ... your fields ...
+```
+
+### TenantOwnedMixin
+
+```python
+from sqlalchemy.orm import DeclarativeBase
+from unboil_sqlalchemy_mixins import TenantOwnedMixin
+
+class Base(DeclarativeBase):
+    pass
+
+class Post(TenantOwnedMixin, Base):
+    __tablename__ = "posts"
+    # ... your fields ...
+
+class Board(TenantOwnedMixin, Base, tenant_fk="tenants.id"):
+    __tablename__ = "boards"
 ```
 
 ## Mixins API
