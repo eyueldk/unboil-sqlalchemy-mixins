@@ -8,7 +8,7 @@ import time
 class Base(MappedAsDataclass, DeclarativeBase):
     pass
 
-class ExampleTimestamped(TimestampedMixin, Base):
+class Example(TimestampedMixin, Base):
     __tablename__ = "example_timestamped"
     id: Mapped[str] = mapped_column(String, primary_key=True)
     name: Mapped[str] = mapped_column(String)
@@ -23,7 +23,7 @@ def session():
     session.close()
 
 def test_timestamped_fields(session: Session):
-    obj = ExampleTimestamped(id="test", name="foo")
+    obj = Example(id="test", name="foo")
     session.add(obj)
     session.commit()
     assert obj.created_at is not None

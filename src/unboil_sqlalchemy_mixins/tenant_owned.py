@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 from sqlalchemy.orm import Mapped, mapped_column, MappedAsDataclass
 from sqlalchemy import ForeignKey, String
 
@@ -7,21 +8,21 @@ class TenantOwnedMixin(MappedAsDataclass):
     Inherit this class in your models to add a required, indexed 'tenant_id' column.
 
     Usage:
+        
         class MyModel(TenantOwnedMixin, Base):
             ...
-        class MyModel(TenantOwnedMixin.with_config("tenants.id"), Base):
+
+        class MyModel(TenantOwnedMixin, Base, tenant_fk="tenants.id"):
             ...
     """
 
-    tenant_id: Mapped[str] = mapped_column(String(), nullable=False, index=True)
+    if TYPE_CHECKING:
+        tenant_id: Mapped[str]
 
-    @classmethod
-    def with_config(cls, tenant_fk: str) -> "type[TenantOwnedMixin]":
-        from sqlalchemy import ForeignKey
-        class _TenantOwnedMixin(cls):
-            tenant_id: Mapped[str] = mapped_column(
-                ForeignKey(tenant_fk, ondelete="CASCADE"),
-                nullable=False,
-                index=True,
-            )
-        return _TenantOwnedMixin
+    def __init_subclass__(cls, tenant_fk: str | None = None, **kwargs):
+        if tenant_fk is None:
+            sqla_type = String()
+        else:
+            sqla_type = ForeignKey(tenant_fk, ondelete="CASCADE")
+        cls.tenant_id = mapped_column(sqla_type, nullable=False, index=True)
+        super().__init_subclass__(**kwargs)

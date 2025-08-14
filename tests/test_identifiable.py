@@ -9,7 +9,7 @@ PREFIX = "example_"
 class Base(MappedAsDataclass, DeclarativeBase):
     pass
 
-class Example(IdentifiableMixin.with_config(PREFIX), Base):
+class Example(IdentifiableMixin, Base, id_prefix=PREFIX):
     __tablename__ = "examples"
     name: Mapped[str] = mapped_column(String)
 
