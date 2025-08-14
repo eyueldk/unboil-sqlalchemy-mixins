@@ -14,7 +14,8 @@ class TenantOwnedMixin(MappedAsDataclass):
     """
     tenant_id: Mapped[str]
     
-    def __init_subclass__(cls, tenant_fk: str | None = None) -> None:
+    def __init_subclass__(cls, tenant_fk: str | None = None, **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
         if tenant_fk is None:
             sqla_type = String()
         else:

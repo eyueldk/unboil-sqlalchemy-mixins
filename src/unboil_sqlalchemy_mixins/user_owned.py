@@ -14,7 +14,8 @@ class UserOwnedMixin(MappedAsDataclass):
     """
     user_id: Mapped[str]
 
-    def __init_subclass__(cls, user_fk: str | None = None) -> None:
+    def __init_subclass__(cls, user_fk: str | None = None, **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
         if user_fk is None:
             sqla_type = String()
         else:

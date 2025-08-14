@@ -13,7 +13,8 @@ class IdentifiableMixin(MappedAsDataclass):
 
     id: Mapped[str] = mapped_column(init=False)
     
-    def __init_subclass__(cls, id_prefix: str = "") -> None:
+    def __init_subclass__(cls, id_prefix: str = "", **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
         cls.id = mapped_column(
             String(32),
             primary_key=True,
