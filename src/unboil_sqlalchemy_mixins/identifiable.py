@@ -11,7 +11,7 @@ class IdentifiableMixin(MappedAsDataclass):
             ...
     """
 
-    id: Mapped[str]
+    id: Mapped[str] = mapped_column(init=False)
     
     def __init_subclass__(cls, id_prefix: str = "") -> None:
         cls.id = mapped_column(
