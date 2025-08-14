@@ -21,7 +21,7 @@ class IdentifiableMixin(MappedAsDataclass):
     
     @classmethod
     def with_config(cls, prefix: str) -> "type[IdentifiableMixin]":
-        class _IdentifiableMixin(IdentifiableMixin):
+        class _IdentifiableMixin(cls):
             id: Mapped[str] = mapped_column(
                 String(32),
                 primary_key=True,

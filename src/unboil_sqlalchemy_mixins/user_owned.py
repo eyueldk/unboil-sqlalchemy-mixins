@@ -18,7 +18,7 @@ class UserOwnedMixin(MappedAsDataclass):
     @classmethod
     def with_config(cls, user_fk: str) -> "type[UserOwnedMixin]":
         from sqlalchemy import ForeignKey
-        class _UserOwnedMixin(UserOwnedMixin):
+        class _UserOwnedMixin(cls):
             user_id: Mapped[str] = mapped_column(
                 ForeignKey(user_fk, ondelete="CASCADE"),
                 nullable=False,

@@ -18,7 +18,7 @@ class TenantOwnedMixin(MappedAsDataclass):
     @classmethod
     def with_config(cls, tenant_fk: str) -> "type[TenantOwnedMixin]":
         from sqlalchemy import ForeignKey
-        class _TenantOwnedMixin(TenantOwnedMixin):
+        class _TenantOwnedMixin(cls):
             tenant_id: Mapped[str] = mapped_column(
                 ForeignKey(tenant_fk, ondelete="CASCADE"),
                 nullable=False,
