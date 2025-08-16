@@ -19,7 +19,7 @@ class IdentifiableMixin(MappedAsDataclass):
     """
 
     id: Mapped[str] = mapped_column(
-        String(32),
+        String(255),
         primary_key=True,
         default=lambda: uuid.uuid4().hex,
         nullable=False,
@@ -30,7 +30,7 @@ class IdentifiableMixin(MappedAsDataclass):
     def with_id_prefix(id_prefix: str) -> type["IdentifiableMixin"]:
         class IdentifiableMixinImpl(IdentifiableMixin):
             id: Mapped[str] = mapped_column(
-                String(32),
+                String(255),
                 primary_key=True,
                 default=lambda: f"{id_prefix}{uuid.uuid4().hex}",
                 nullable=False,
