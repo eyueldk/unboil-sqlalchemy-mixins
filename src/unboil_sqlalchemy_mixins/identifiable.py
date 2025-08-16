@@ -13,20 +13,27 @@ class IdentifiableMixin(MappedAsDataclass):
 
         class MyModel(IdentifiableMixin, Base):
             ...
-    
-        class MyModel(IdentifiableMixin, Base, id_prefix="user_"):
+
+        class MyModel(IdentifiableMixin.with_id_prefix("user_"), Base):
             ...
     """
 
-    if TYPE_CHECKING:
-        id: Mapped[str] = mapped_column(init=False)
-    
-    def __init_subclass__(cls, id_prefix: str = "", **kwargs):
-        cls.id = mapped_column(
-            String(32),
-            primary_key=True,
-            default=lambda: f"{id_prefix}{uuid.uuid4().hex}",
-            nullable=False,
-            init=False,
-        )
-        super().__init_subclass__(**kwargs)
+    id: Mapped[str] = mapped_column(
+        String(32),
+        primary_key=True,
+        default=lambda: uuid.uuid4().hex,
+        nullable=False,
+        init=False,
+    )
+
+    @staticmethod
+    def with_id_prefix(id_prefix: str) -> type["IdentifiableMixin"]:
+        class IdentifiableMixinImpl(IdentifiableMixin):
+            id: Mapped[str] = mapped_column(
+                String(32),
+                primary_key=True,
+                default=lambda: f"{id_prefix}{uuid.uuid4().hex}",
+                nullable=False,
+                init=False,
+            )
+        return IdentifiableMixinImpl

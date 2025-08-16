@@ -12,7 +12,7 @@ class User(Base):
     id: Mapped[str] = mapped_column(String, primary_key=True)
     name: Mapped[str] = mapped_column(String)
 
-class Example(UserOwnedMixin, Base, user_fk="users.id"):
+class Example(UserOwnedMixin.with_user_fk("users.id"), Base):
     __tablename__ = "examples"
     id: Mapped[str] = mapped_column(String, primary_key=True)
     user_id: Mapped[str] = mapped_column(String)

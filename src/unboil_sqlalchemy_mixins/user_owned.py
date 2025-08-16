@@ -12,17 +12,21 @@ class UserOwnedMixin(MappedAsDataclass):
         class MyModel(UserOwnedMixin, Base):
             ...
     
-        class MyModel(UserOwnedMixin.with_config("users.id"), Base):
+        class MyModel(UserOwnedMixin.with_user_fk("users.id"), Base):
             ...
     """
 
-    if TYPE_CHECKING:
-        user_id: Mapped[str]
+    user_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
 
-    def __init_subclass__(cls, user_fk: str | None = None, **kwargs):
+    @staticmethod
+    def with_user_fk(user_fk: str | None) -> type["UserOwnedMixin"]:
+
         if user_fk is None:
             sqla_type = String()
         else:
             sqla_type = ForeignKey(user_fk, ondelete="CASCADE")
-        cls.user_id = mapped_column(sqla_type, nullable=False, index=True)
-        super().__init_subclass__(**kwargs)
+
+        class UserOwnedMixinImpl(UserOwnedMixin):
+            user_id: Mapped[str] = mapped_column(sqla_type, nullable=False, index=True)
+
+        return UserOwnedMixinImpl

@@ -8,14 +8,16 @@ from unboil_sqlalchemy_mixins.identifiable import IdentifiableMixin
 class Base(MappedAsDataclass, DeclarativeBase):
     pass
 
-class Tenant(Base):
+class Tenant(IdentifiableMixin, Base):
     __tablename__ = "tenants"
-    id: Mapped[str] = mapped_column(String, primary_key=True)
     name: Mapped[str] = mapped_column(String)
 
-class Example(IdentifiableMixin, TenantOwnedMixin, Base, tenant_fk="tenants.id"):
-    __tablename__ = "examples"
-    tenant_id: Mapped[str] = mapped_column(String)
+class ExampleWithoutFK(IdentifiableMixin, TenantOwnedMixin, Base):
+    __tablename__ = "examples_without_fk"
+    name: Mapped[str] = mapped_column(String)
+
+class ExampleWithFK(IdentifiableMixin, TenantOwnedMixin.with_tenant_fk("tenants.id"), Base):
+    __tablename__ = "examples_with_fk"
     name: Mapped[str] = mapped_column(String)
 
 @pytest.fixture(scope="function")
@@ -27,11 +29,19 @@ def session():
     yield session
     session.close()
 
-def test_tenant_owned(session: Session):
-    tenant = Tenant(id="t1", name="tenant1")
+def test_tenant_owned_with_fk(session: Session):
+    tenant = Tenant(name="tenant1")
     session.add(tenant)
     session.commit()
-    example = Example(name="example", tenant_id=tenant.id)
+    example = ExampleWithoutFK(name="example", tenant_id=tenant.id)
     session.add(example)
     session.commit()
     assert example.tenant_id == tenant.id
+
+
+def test_tenant_owned_without_fk(session: Session):
+    tenant_id = "default"
+    example = ExampleWithoutFK(name="example", tenant_id=tenant_id)
+    session.add(example)
+    session.commit()
+    assert example.tenant_id == tenant_id

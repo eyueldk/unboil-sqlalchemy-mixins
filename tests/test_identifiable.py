@@ -9,8 +9,12 @@ PREFIX = "example_"
 class Base(MappedAsDataclass, DeclarativeBase):
     pass
 
-class Example(IdentifiableMixin, Base, id_prefix=PREFIX):
-    __tablename__ = "examples"
+class ExampleWithoutPrefix(IdentifiableMixin, Base):
+    __tablename__ = "examples_without_prefix"
+    name: Mapped[str] = mapped_column(String)
+
+class ExampleWithPrefix(IdentifiableMixin.with_id_prefix(PREFIX), Base):
+    __tablename__ = "examples_with_prefix"
     name: Mapped[str] = mapped_column(String)
 
 @pytest.fixture(scope="function")
@@ -22,9 +26,16 @@ def session():
     yield session
     session.close()
 
-def test_identifiable_mixin(session: Session):
-    obj = Example(name="test")
+def test_identifiable_mixin_with_prefix(session: Session):
+    obj = ExampleWithPrefix(name="test")
     session.add(obj)
     session.commit()
     assert obj.id is not None
     assert obj.id.startswith(PREFIX)
+
+def test_identifiable_mixin_without_prefix(session: Session):
+    obj = ExampleWithoutPrefix(name="test")
+    session.add(obj)
+    session.commit()
+    assert obj.id is not None
+    assert not obj.id.startswith(PREFIX)

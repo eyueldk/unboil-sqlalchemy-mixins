@@ -1,6 +1,8 @@
 from typing import TYPE_CHECKING
+from typing_extensions import Self
 from sqlalchemy.orm import Mapped, mapped_column, MappedAsDataclass
 from sqlalchemy import ForeignKey, String
+
 
 class TenantOwnedMixin(MappedAsDataclass):
     """
@@ -12,17 +14,22 @@ class TenantOwnedMixin(MappedAsDataclass):
         class MyModel(TenantOwnedMixin, Base):
             ...
 
-        class MyModel(TenantOwnedMixin, Base, tenant_fk="tenants.id"):
+        class MyModel(TenantOwnedMixin.with_tenant_fk("tenants.id"), Base):
             ...
     """
 
-    if TYPE_CHECKING:
-        tenant_id: Mapped[str]
+    tenant_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
 
-    def __init_subclass__(cls, tenant_fk: str | None = None, **kwargs):
+    @staticmethod
+    def with_tenant_fk(tenant_fk: str | None) -> type["TenantOwnedMixin"]:
+        
         if tenant_fk is None:
             sqla_type = String()
         else:
             sqla_type = ForeignKey(tenant_fk, ondelete="CASCADE")
-        cls.tenant_id = mapped_column(sqla_type, nullable=False, index=True)
-        super().__init_subclass__(**kwargs)
+        
+        class TenantOwnedMixinImpl(TenantOwnedMixin):
+            tenant_id: Mapped[str] = mapped_column(sqla_type, nullable=False, index=True)
+
+        return TenantOwnedMixinImpl
+            
